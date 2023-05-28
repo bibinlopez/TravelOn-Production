@@ -134,17 +134,23 @@ const getAllPlaces = (req, res) => {
 
 
 const getNearPlaces = (req, res) => {
+   console.log(req.user , 'this is req.user');
+   let {lat,long,km} = req.user
+   lat = lat[0];
+   long = long[0];
+   km = km[0];
+   console.log(typeof km);
    Place.aggregate([
       {
          $geoNear: {
             near: {
                type: "Point",
                coordinates: [  // need to parse float
-                  parseFloat(req.body.long),
-                  parseFloat(req.body.lat)
+                  parseFloat(long),
+                  parseFloat(lat)
                ]
             },
-            maxDistance: req.body.km * 1000,  //in meters
+            maxDistance: km * 1000,  //in meters
             distanceField: "distance in meters",
             spherical: true
          }

@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const path = require('path')
 const multer = require('multer')
+const multiparty = require ('../middlewares/multiparty')
 
 const { addFromExcel,
    getAllPlaces,
@@ -27,7 +28,7 @@ router.use('/', express.static('public/placeImage'))
 
 // router.post('/', addFromExcel)
 router.get('/', getAllPlaces)
-router.post('/near', getNearPlaces)
+router.post('/near',multiparty,getNearPlaces)
 router.patch('/:id', upload.array('photo', 6) ,editPlace)
 
 module.exports = router 
