@@ -30,7 +30,7 @@ const userRegistration = async (req, res) => {
    bloodGroup = bloodGroup[0].trim();
    password = password[0].trim();
    confirmPassword = confirmPassword[0].trim();
-   console.log(typeof mob);
+   // console.log(typeof mob);
    if (name == "" || email == "" || address == "" || pin == "" || mob == "" || bloodGroup == "" || dob == "" || password == "" || confirmPassword == "") {
       throw new CustomAPIError('please providse credentials', 400)
 
