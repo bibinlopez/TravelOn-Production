@@ -24,7 +24,7 @@ router.use('/', express.static('public/travelLogImage'))
 
 // router.post('/', upload.single('photo'), addSample)
 router.post('/', upload.array('photo', 6), addTravelLog)
-router.get('/', getAllTravelLogs)
+// router.get('/', getAllTravelLogs)
 
 
 
