@@ -2,8 +2,9 @@ const express = require('express');
 const router = express.Router();
 const multer = require('multer');
 const path = require('path')
-const { addTravelLog
-} = require('../controllers/travelLog')
+const {
+   addTravelLog,
+   getAllTravelLogs } = require('../controllers/travelLog')
 
 
 var storage = multer.diskStorage({
@@ -23,6 +24,7 @@ router.use('/', express.static('public/travelLogImage'))
 
 // router.post('/', upload.single('photo'), addSample)
 router.post('/', upload.array('photo', 6), addTravelLog)
+router.get('/', getAllTravelLogs)
 
 
 

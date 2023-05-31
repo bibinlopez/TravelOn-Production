@@ -37,6 +37,34 @@ const addTravelLog = (req, res) => {
 }
 
 
+const getAllTravelLogs = (req, res) => {
+
+   TravelLog.find()
+      .then((result) => {
+         if (result) {
+            return res.status(200).json({
+               success: true,
+               data: {
+                  count: result.length,
+                  result
+               }
+            })
+         } else {
+            return res.status(404).json({
+               success: false,
+               error: "travelLog not found"
+            })
+         }
+      })
+      .catch((err) => {
+         return res.status(500).json({
+            success: false,
+            error: err
+         })
+      })
+}
+
 module.exports = {
-   addTravelLog
+   addTravelLog,
+   getAllTravelLogs
 }
