@@ -1,22 +1,26 @@
-const Sample = require('../models/sample')
+const TravelLog = require('../models/travelLog')
 
-const addSample = (req, res) => {
+const addTravelLog = (req, res) => {
    const array = []
    // console.log(req.file);
    console.log(req.files);
-   req.files.forEach((item)=> {
+   req.files.forEach((item) => {
       // console.log(item.filename);
-      array.push(`/sample/${item.filename}`)
+      array.push(`/travel/${item.filename}`)
    });
 
    // console.log(array);
    // const Name = `/sample/${req.file.filename}`
+   const { heading, remark, latitude, longitude, content } = req.body
    const data = {
-      name: req.body.name,
-      place: req.body.place,
-      image: array
+      heading,
+      remark,
+      latitude,
+      longitude,
+      content,
+      images: array
    }
-   const log = new Sample(data);
+   const log = new TravelLog(data);
    log.save()
       .then((result) => {
          return res.status(200).json({
@@ -33,6 +37,6 @@ const addSample = (req, res) => {
 }
 
 
-module.exports= {
-   addSample
+module.exports = {
+   addTravelLog
 }

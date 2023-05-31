@@ -2,12 +2,12 @@ const express = require('express');
 const router = express.Router();
 const multer = require('multer');
 const path = require('path')
-const { addSample
-} = require('../controllers/sample')
+const { addTravelLog
+} = require('../controllers/travelLog')
 
 
 var storage = multer.diskStorage({
-   destination: './public',
+   destination: './public/travelLogImage',
    filename: function (req, file, cb) {
       let ext = path.extname(file.originalname)
       // console.log(ext)
@@ -17,12 +17,12 @@ var storage = multer.diskStorage({
 var upload = multer({ storage: storage })
 
 
-router.use('/', express.static('public'))
+router.use('/', express.static('public/travelLogImage'))
 
 
 
 // router.post('/', upload.single('photo'), addSample)
-router.post('/', upload.array('photo', 6), addSample)
+router.post('/', upload.array('photo', 6), addTravelLog)
 
 
 

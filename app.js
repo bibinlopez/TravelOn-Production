@@ -14,6 +14,7 @@ const notFound = require('./middlewares/notFound')
 const app = express()
 const place = require('./routes/place')
 const sample = require('./routes/sample')
+const travelLog= require('./routes/travelLog')
 
 
 app.use(rateLimit({
@@ -40,6 +41,7 @@ app.use('/', express.static('public/homePage'))
 
 app.use('/api', place)
 app.use('/sample', sample)
+app.use('/travel',travelLog)
 app.use(notFound)
 
 const port = process.env.PORT || 3000;

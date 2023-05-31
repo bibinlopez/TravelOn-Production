@@ -27,7 +27,7 @@ router.use('/', express.static('public/placeImage'))
 
 
 // router.post('/', addFromExcel)
-router.get('/', getAllPlaces)
+// router.get('/', getAllPlaces)
 router.post('/near',multiparty,getNearPlaces)
 router.patch('/:id', upload.array('photo', 6) ,editPlace)
 
