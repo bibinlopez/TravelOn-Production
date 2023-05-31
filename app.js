@@ -1,5 +1,6 @@
 const express = require('express')
 require('dotenv').config()
+require('express-async-errors')
 
 // extra security packages
 const helmet = require('helmet')
@@ -7,7 +8,7 @@ const cors = require('cors')
 const xss = require('xss-clean')
 const rateLimit = require('express-rate-limit')
 
-
+const errorHandlerMiddlerware =require('./middlewares/error-handler')
 
 const connectDB = require('./db/connect')
 const notFound = require('./middlewares/notFound')
@@ -15,6 +16,7 @@ const app = express()
 const place = require('./routes/place')
 const sample = require('./routes/sample')
 const travelLog= require('./routes/travelLog')
+const userRoute = require('./routes/userRoute')
 
 
 app.use(rateLimit({
@@ -42,7 +44,10 @@ app.use('/', express.static('public/homePage'))
 app.use('/api', place)
 app.use('/sample', sample)
 app.use('/travel',travelLog)
+app.use('/user',userRoute)
 app.use(notFound)
+
+app.use(errorHandlerMiddlerware)
 
 const port = process.env.PORT || 3000;
 
