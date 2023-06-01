@@ -74,7 +74,7 @@ const userRegistration = async (req, res) => {
    }
    const newUser = new User(data);
    const result = await newUser.save()
-   console.log(result);
+   // console.log(result);
    sendOTPEmail(result, res)
    // return res.status(201).json({ success: true, data: result })
 }
@@ -106,13 +106,13 @@ const sendOTPEmail = async (result, res) => {
       userId: _id,
       otp: hashedOTP,
       createdAt: Date.now(),
-      expiresAt: Date.now() + 1800000      // 30 minutes in milliseconds
+      expiresAt: Date.now() + 18      // 30 minutes in milliseconds
 
    })
 
    //save otp record
    const Result = await userverification.save();
-   console.log(Result);
+   // console.log(Result);
    transporter.sendMail(options, (err, info) => {
       if (err) {
          console.log(err);
@@ -133,7 +133,7 @@ const sendOTPEmail = async (result, res) => {
 
 const verifyOTP = async (req, res) => {
 
-   console.log('req.body', req.body);
+   // console.log('req.body', req.body);
    let { userId, otp } = req.body
    if (!userId || !otp) {
       throw new CustomAPIError('Empty otp details are not allowed', 400)
@@ -173,26 +173,27 @@ const verifyOTP = async (req, res) => {
 }
 
 
-// for resendOTP and user manually go for email verification
-// const resendOTP = async (req, res) => {
+//for resendOTP and user manually go for email verification
+const resendOTP = async (req, res) => {
+   // console.log(req.body);
+   let { userId } = req.body
 
-//    let { userId, email } = req.body
+   if (!userId) {
+      throw new CustomAPIError("Empty user details are not allowed",400)
+   }
 
-//    if (!userId || !email) {
-//       throw new CustomAPIError("Empty user details are not allowed",400)
-//    }
+   const Result = await User.findOne({_id: userId})
+   // console.log(Result);
 
-//    const Result = await User.findOne(userId)
-
-//    //delete existing records and resend
-//    await UserVerification.deleteOne({ userId })
+   //delete existing records and resend
+   await UserVerification.deleteOne({ userId })
       
-//    sendOTPEmail(Result, res)
-// }
+   sendOTPEmail(Result, res)
+}
 
 
 module.exports = {
    userRegistration,
    verifyOTP,
-   // resendOTP
+   resendOTP
 }

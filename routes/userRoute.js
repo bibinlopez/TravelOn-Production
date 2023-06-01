@@ -8,7 +8,7 @@ const multiparty = require('../middlewares/multiparty')
 const {
    userRegistration,
    verifyOTP,
-   // resendOTP
+   resendOTP
  } = require('../controllers/userController')
 
 
@@ -17,7 +17,7 @@ const {
 
 router.post('/registration', multiparty, userRegistration)
 router.post('/verifyotp', verifyOTP)
-// router.post('/resendotp', resendOTP)
+router.post('/resendotp', resendOTP)
 
 
 module.exports = router
