@@ -6,14 +6,18 @@ const router = express.Router();
 const multiparty = require('../middlewares/multiparty')
 
 const {
-   userRegistration } = require('../controllers/userController')
+   userRegistration,
+   verifyOTP,
+   // resendOTP
+ } = require('../controllers/userController')
 
 
 
-   
 
-router.post('/', multiparty, userRegistration)
 
+router.post('/registration', multiparty, userRegistration)
+router.post('/verifyotp', verifyOTP)
+// router.post('/resendotp', resendOTP)
 
 
 module.exports = router

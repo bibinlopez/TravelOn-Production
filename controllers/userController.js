@@ -1,10 +1,12 @@
 
 const { CustomAPIError } = require('../errors/custom-error')
 const User = require('../models/userModel')
+const UserVerification = require('../models/userVerification')
 
 const bcrypt = require('bcrypt');
 var validator = require('validator');
 var passwordValidator = require('password-validator');
+const nodemailer = require('nodemailer')
 
 // Create a schema
 var schema = new passwordValidator();
@@ -40,10 +42,10 @@ const userRegistration = async (req, res) => {
    } else if (!/^(?:(?:\+|0{0,2})91(\s*[\-]\s*)?|[0]?)?[789]\d{9}$/.test(mob)) {
       throw new CustomAPIError('invalid mob. no entered', 400)
 
-   }else if (/\d{7}/.test(pin)) {
+   } else if (/\d{7}/.test(pin)) {
       throw new CustomAPIError('invalid pin-code entered', 400)
 
-   }else if (password !== confirmPassword) {
+   } else if (password !== confirmPassword) {
       throw new CustomAPIError('password must be same', 400)
 
    } else if (validator.isEmail(email) === false) {
@@ -72,11 +74,125 @@ const userRegistration = async (req, res) => {
    }
    const newUser = new User(data);
    const result = await newUser.save()
-   return res.status(201).json({ success: true, data: result })
+   console.log(result);
+   sendOTPEmail(result, res)
+   // return res.status(201).json({ success: true, data: result })
+}
+
+
+
+const sendOTPEmail = async (result, res) => {
+   const { _id, email } = result
+   otp = `${Math.floor(1000 + Math.random() * 9000)}`
+
+   const transporter = nodemailer.createTransport({
+      service: "hotmail",
+      auth: {
+         user: process.env.EMAIL,
+         pass: process.env.PASSWORD
+      }
+   })
+
+   const options = {
+      from: `Travel-In <${process.env.EMAIL}>`,
+      to: email,
+      subject: "Verifiy Your Email",
+      html: `<p> Your OTP Verification code is <b> ${otp} </b>. Enter the code in the TravelOn app to verify your email address and complete verification process. This code <b>expires in 30 minutes</b>.</p>`
+
+   }
+   saltRounds = 10
+   const hashedOTP = await bcrypt.hash(otp, saltRounds)
+   const userverification = await new UserVerification({
+      userId: _id,
+      otp: hashedOTP,
+      createdAt: Date.now(),
+      expiresAt: Date.now() + 1800000      // 30 minutes in milliseconds
+
+   })
+
+   //save otp record
+   const Result = await userverification.save();
+   console.log(Result);
+   transporter.sendMail(options, (err, info) => {
+      if (err) {
+         console.log(err);
+         return;
+      } else {
+         console.log(info.messageId);
+         return res.json({
+            status: "PENDING",
+            message: 'Verification otp email send through email',
+            data: result
+         })
+      }
+   })
+
 
 }
 
 
+const verifyOTP = async (req, res) => {
+
+   console.log('req.body', req.body);
+   let { userId, otp } = req.body
+   if (!userId || !otp) {
+      throw new CustomAPIError('Empty otp details are not allowed', 400)
+   } else {
+      const userVerificationRecords = await UserVerification.find({ userId })
+      console.log('records', userVerificationRecords);
+      if (userVerificationRecords.length <= 0) {
+         //no record found
+         throw new CustomAPIError("Account record does not exist or has been verified already. Please sign up or log in.", 400)
+      }
+      else {
+         //user otp record exists
+         const { expiresAt } = userVerificationRecords[0]
+         const hashedOTP = userVerificationRecords[0].otp
+
+         if (expiresAt < Date.now()) {
+            // user otp records has expired
+            await UserVerification.deleteOne({ userId })
+            throw new CustomAPIError("Code has expried . Please request again.", 400)
+         } else {
+            const validOTP = await bcrypt.compare(otp, hashedOTP)
+            if (!validOTP) {
+               //entered otp is wrong
+               throw new CustomAPIError("Invalid code passed . Check your inbox.", 401)
+            } else {
+               await User.updateOne({ _id: userId }, { verified: true })
+               await UserVerification.deleteOne({ userId })
+               return res.status(200).json({
+                  status: "VERIFIED",
+                  message: "User email verified successfully"
+               })
+            }
+
+         }
+      }
+   }
+}
+
+
+// for resendOTP and user manually go for email verification
+// const resendOTP = async (req, res) => {
+
+//    let { userId, email } = req.body
+
+//    if (!userId || !email) {
+//       throw new CustomAPIError("Empty user details are not allowed",400)
+//    }
+
+//    const Result = await User.findOne(userId)
+
+//    //delete existing records and resend
+//    await UserVerification.deleteOne({ userId })
+      
+//    sendOTPEmail(Result, res)
+// }
+
+
 module.exports = {
-   userRegistration
+   userRegistration,
+   verifyOTP,
+   // resendOTP
 }
