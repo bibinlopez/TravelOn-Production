@@ -106,7 +106,7 @@ const sendOTPEmail = async (result, res) => {
       userId: _id,
       otp: hashedOTP,
       createdAt: Date.now(),
-      expiresAt: Date.now() + 18      // 30 minutes in milliseconds
+      expiresAt: Date.now() + 1800000      // 30 minutes in milliseconds
 
    })
 
