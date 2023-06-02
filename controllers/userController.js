@@ -2,6 +2,7 @@
 const { CustomAPIError } = require('../errors/custom-error')
 const User = require('../models/userModel')
 const UserVerification = require('../models/userVerification')
+const jwt = require('jsonwebtoken')
 
 const bcrypt = require('bcrypt');
 var validator = require('validator');
@@ -179,21 +180,49 @@ const resendOTP = async (req, res) => {
    let { userId } = req.body
 
    if (!userId) {
-      throw new CustomAPIError("Empty user details are not allowed",400)
+      throw new CustomAPIError("Empty user details are not allowed", 400)
    }
 
-   const Result = await User.findOne({_id: userId})
+   const Result = await User.findOne({ _id: userId })
    // console.log(Result);
 
    //delete existing records and resend
    await UserVerification.deleteOne({ userId })
-      
+
    sendOTPEmail(Result, res)
+}
+
+
+const userLogin = async (req, res) => {
+   const { email, password } = req.body
+   if (!email || !password) {
+      throw new CustomAPIError('Please provide email and password', 400)
+   }
+
+
+   const user = await User.findOne({ email })
+   
+   if (!user) {
+      throw new CustomAPIError('invalid credentials(email)', 401)
+   }
+   const { _id } = user
+
+   const originalPassword = user.password
+   const isMatch = await bcrypt.compare(password, originalPassword)
+   if (!isMatch) {
+      throw new CustomAPIError('invalid credentials(password)', 401)
+   }
+
+   const token = jwt.sign({_id, email},process.env.JWT,{expiresIn: '1d'})
+
+   return res.status(200).json({success: true, data: {user, token}})
+
 }
 
 
 module.exports = {
    userRegistration,
    verifyOTP,
-   resendOTP
+   resendOTP,
+   userLogin
 }
