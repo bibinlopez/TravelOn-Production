@@ -1,3 +1,4 @@
+const { CustomAPIError } = require('../errors/custom-error')
 const Place = require('../models/place')
 const TravelLog = require('../models/travelLog')
 const XLSX = require("xlsx");
@@ -135,7 +136,7 @@ const getAllPlaces = (req, res) => {
 
 
 const getNearPlaces = async (req, res) => {
-   try {
+   
       // console.log(req.user, 'this is req.user');
       // let { lat, long, km } = req.user
       // lat = lat[0];
@@ -162,9 +163,6 @@ const getNearPlaces = async (req, res) => {
       const travelLogs = await TravelLog.find()
 
       return res.status(200).json({ success: true, data: { nearPlaces, travelLogs } })
-   } catch (error) {
-      return res.status(500).json({ msg: 'Something went wrog try again later' })
-   }
 
 
 
