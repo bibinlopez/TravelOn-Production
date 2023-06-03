@@ -79,7 +79,7 @@ const editPlace = (req, res) => {
    const data = {
       image: array
    }
-   
+
    Place.findByIdAndUpdate(req.params.id, data, {
       new: true
    })
@@ -134,14 +134,15 @@ const getAllPlaces = (req, res) => {
 
 
 
-const getNearPlaces = async(req, res) => {
+const getNearPlaces = async (req, res) => {
    try {
       // console.log(req.user, 'this is req.user');
-      let { lat, long, km } = req.user
-      lat = lat[0];
-      long = long[0];
-      km = km[0];
+      // let { lat, long, km } = req.user
+      // lat = lat[0];
+      // long = long[0];
+      // km = km[0];
       // console.log(typeof km);
+      const { lat, long, km } = req.body
       const nearPlaces = await Place.aggregate([
          {
             $geoNear: {
@@ -160,29 +161,29 @@ const getNearPlaces = async(req, res) => {
       ])
       const travelLogs = await TravelLog.find()
 
-      return res.status(200).json({success : true , data: {nearPlaces, travelLogs}})
+      return res.status(200).json({ success: true, data: { nearPlaces, travelLogs } })
    } catch (error) {
-      return res.status(500).json({msg: 'Something went wrog try again later'})
+      return res.status(500).json({ msg: 'Something went wrog try again later' })
    }
 
 
 
-      // .then((result) => {
-      //    return res.status(200).json({
-      //       success: true,
-      //       data: {
-      //          result,
-      //          count: result.length
-      //       }
-      //    })
-      // })
-      // .catch((err) => {
-      //    console.log(err);
-      //    return res.status(422).json({
-      //       success: false,
-      //       error: "failed"
-      //    })
-      // })
+   // .then((result) => {
+   //    return res.status(200).json({
+   //       success: true,
+   //       data: {
+   //          result,
+   //          count: result.length
+   //       }
+   //    })
+   // })
+   // .catch((err) => {
+   //    console.log(err);
+   //    return res.status(422).json({
+   //       success: false,
+   //       error: "failed"
+   //    })
+   // })
 }
 
 module.exports = {
