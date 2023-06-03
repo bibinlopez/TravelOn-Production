@@ -144,6 +144,7 @@ const getNearPlaces = async (req, res) => {
       // km = km[0];
       // console.log(typeof km);
       const { lat, long, km } = req.body
+      // console.log(req.body);
       const nearPlaces = await Place.aggregate([
          {
             $geoNear: {
