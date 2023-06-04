@@ -1,8 +1,11 @@
 
 const { CustomAPIError } = require('../errors/custom-error')
 const User = require('../models/userModel')
+const Place = require('../models/place')
 const UserVerification = require('../models/userVerification')
 const jwt = require('jsonwebtoken')
+
+const TravelLog = require('../models/travelLog')
 
 const bcrypt = require('bcrypt');
 var validator = require('validator');
@@ -95,7 +98,7 @@ const sendOTPEmail = async (result, res) => {
    })
 
    const options = {
-      from: `Travel-In <${process.env.EMAIL}>`,
+      from: `Travel-On <${process.env.EMAIL}>`,
       to: email,
       subject: "Verifiy Your Email",
       html: `<p> Your OTP Verification code is <b> ${otp} </b>. Enter the code in the TravelOn app to verify your email address and complete verification process. This code <b>expires in 30 minutes</b>.</p>`
@@ -194,11 +197,14 @@ const resendOTP = async (req, res) => {
 
 
 const userLogin = async (req, res) => {
-   const { email, password } = req.body
+   const { email, password ,lat,long,km} = req.body
    if (!email || !password) {
       throw new CustomAPIError('Please provide email and password', 400)
    }
 
+   if(!lat || !long || !km){
+      throw new CustomAPIError('Please provide location details', 400)
+   }
 
    const user = await User.findOne({ email })
    
@@ -215,7 +221,29 @@ const userLogin = async (req, res) => {
 
    const token = jwt.sign({_id, email},process.env.JWT,{expiresIn: '1d'})
 
-   return res.status(200).json({success: true, data: {user, token}})
+
+   const nearPlaces = await Place.aggregate([
+      {
+         $geoNear: {
+            near: {
+               type: "Point",
+               coordinates: [  // need to parse float
+                  parseFloat(long),
+                  parseFloat(lat)
+               ]
+            },
+            maxDistance: km * 1000,  //in meters
+            distanceField: "distance in meters",
+            spherical: true
+         }
+      }, { $match: { status: true } }    // only show to the user  condition good place to visit
+   ])
+
+
+   const travelLogs = await TravelLog.find()
+
+
+   return res.status(200).json({success: true, data: {user, token , nearPlaces , travelLogs}})
 
 }
 
