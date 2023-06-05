@@ -2,7 +2,7 @@ const mongoose = require('mongoose')
 const schema = mongoose.Schema;
 
 const userVerification = new schema({
-   userId: String,
+   email: String,
    otp: String,
    createdAt: Date,
    expiresAt: Date

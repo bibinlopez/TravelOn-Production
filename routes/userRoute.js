@@ -3,23 +3,22 @@
 const express = require('express')
 const router = express.Router();
 
-const multiparty = require('../middlewares/multiparty')
+// const multiparty = require('../middlewares/multiparty')
 
 const {
    userRegistration,
-   verifyOTP,
-   resendOTP,
-   userLogin
- } = require('../controllers/userController')
+   sendOTPEmail
+ } = require('../controllers/userAuth')
 
 
 
 
 
-router.post('/registration', multiparty, userRegistration)
-router.post('/verifyotp', verifyOTP)
-router.post('/resendotp', resendOTP)
-router.post('/login', userLogin)
+router.post('/registration', userRegistration)
+// router.post('/verifyotp', verifyOTP)
+// router.post('/resendotp', resendOTP)
+// router.post('/login', userLogin)
+router.post('/otp',sendOTPEmail)
 
 
 module.exports = router

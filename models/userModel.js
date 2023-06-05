@@ -1,24 +1,33 @@
+const bcrypt = require('bcrypt')
 
 const mongoose = require('mongoose')
 const userSchema = new mongoose.Schema({
    name: {
       type: String,
-      required: [true, 'must provide name']
+      required: [true, 'must provide name'],
+      match: [/^[a-zA-Z]+(([',. -][a-zA-Z ])?[a-zA-Z]*)*$/, 'please provide valid name'],
+      minLength: 3,
+      maxLength: 20,
+      trim: true
    },
    address: {
       type: String,
-      required: [true, 'must provide address']
+      required: [true, 'must provide address'],
+      minLength: 10 ,
+      trim : true
    },
    pin: {
       type: Number,
-      required: [true, 'must provide pin']
+      required: [true, 'must provide pin'],
+      match: [/\d{7}/, 'please provide valid pin']
    },
    mob: {
       type: Number,
-      required: [true, 'must provide mob. Number']
+      required: [true, 'must provide mob. Number'],
+      match: [/^(?:(?:\+|0{0,2})91(\s*[\-]\s*)?|[0]?)?[789]\d{9}$/, 'please provide valid mob. number']
    },
    dob: {
-      type: String,
+      type: Date,
       required: [true, 'must provide dob']
    },
    bloodGroup: {
@@ -27,15 +36,15 @@ const userSchema = new mongoose.Schema({
    },
    email: {
       type: String,
-      required: [true, 'must provide email']
+      required: [true, 'must provide email'],
+      match: [
+         /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+         'please provide valid email'],
+      trim: true
    },
-   verified: {
-      type: Boolean,
-      default: false
-   },
+
    password: {
-      type: String,
-      required: [true, 'must provide password']
+      type: String
    },
    // lockedPlaces: [
    //     {
@@ -45,24 +54,34 @@ const userSchema = new mongoose.Schema({
    // ],
    visitedPlaces: [
       {
-         placeId: { type: mongoose.Schema.Types.ObjectId, ref: "Place" }
+         placeId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Place"
+         }
       }
    ],
-   createdAt: {
-      type: Date,
-      required: false
-   }
+   // createdAt: {
+   //    type: Date,
+   //    required: false
+   // }
+},
+   { timestamps: true }
+)
+
+
+// userSchema.pre('save', function (next) {
+//    const date = Date.now()
+//    if (!this.createdAt) {
+//       this.createdAt = date + 19800000
+//    }
+//    next()
+// })
+
+
+userSchema.pre('save', async function () {
+   const saltRound = 10
+   this.password = await bcrypt.hash(this.password, saltRound)
 })
-
-
-userSchema.pre('save', function (next) {
-   const date = Date.now()
-   if (!this.createdAt) {
-      this.createdAt = date + 19800000
-   }
-   next()
-})
-
 
 
 

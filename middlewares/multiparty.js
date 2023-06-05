@@ -9,4 +9,4 @@ const multipartyMiddleware = (req, res, next) => {
    })
 }
 
-module.exports = multipartyMiddleware
+// module.exports = multipartyMiddleware

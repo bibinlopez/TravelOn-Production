@@ -66,27 +66,18 @@ const userRegistration = async (req, res) => {
 
    saltRounds = 10
    const hashedPassword = await bcrypt.hash(password, saltRounds)
-   const data = {
-      name,
-      email,
-      address,
-      dob,
-      mob,
-      bloodGroup,
-      pin,
-      password: hashedPassword,
-   }
-   const newUser = new User(data);
+
+   const newUser = new User(req.body);
    const result = await newUser.save()
    // console.log(result);
-   sendOTPEmail(result, res)
+   // sendOTPEmail(result, res)
    // return res.status(201).json({ success: true, data: result })
 }
 
 
 
-const sendOTPEmail = async (result, res) => {
-   const { _id, email } = result
+const sendOTPEmail = async (req, res) => {
+   const { email } = req.body
    otp = `${Math.floor(1000 + Math.random() * 9000)}`
 
    const transporter = nodemailer.createTransport({
@@ -107,7 +98,7 @@ const sendOTPEmail = async (result, res) => {
    saltRounds = 10
    const hashedOTP = await bcrypt.hash(otp, saltRounds)
    const userverification = await new UserVerification({
-      userId: _id,
+      email,
       otp: hashedOTP,
       createdAt: Date.now(),
       expiresAt: Date.now() + 1800000      // 30 minutes in milliseconds
@@ -197,17 +188,17 @@ const resendOTP = async (req, res) => {
 
 
 const userLogin = async (req, res) => {
-   const { email, password ,lat,long,km} = req.body
+   const { email, password, lat, long, km } = req.body
    if (!email || !password) {
       throw new CustomAPIError('Please provide email and password', 400)
    }
 
-   if(!lat || !long || !km){
+   if (!lat || !long || !km) {
       throw new CustomAPIError('Please provide location details', 400)
    }
 
    const user = await User.findOne({ email })
-   
+
    if (!user) {
       throw new CustomAPIError('invalid credentials(email)', 401)
    }
@@ -219,7 +210,7 @@ const userLogin = async (req, res) => {
       throw new CustomAPIError('invalid credentials(password)', 401)
    }
 
-   const token = jwt.sign({_id, email},process.env.JWT,{expiresIn: '1d'})
+   const token = jwt.sign({ _id, email }, process.env.JWT, { expiresIn: '1d' })
 
 
    const nearPlaces = await Place.aggregate([
@@ -243,14 +234,14 @@ const userLogin = async (req, res) => {
    const travelLogs = await TravelLog.find()
 
 
-   return res.status(200).json({success: true, data: {user, token , nearPlaces , travelLogs}})
+   return res.status(200).json({ success: true, data: { user, token, nearPlaces, travelLogs } })
 
 }
 
 
-module.exports = {
-   userRegistration,
-   verifyOTP,
-   resendOTP,
-   userLogin
-}
+// module.exports = {
+//    userRegistration,
+//    verifyOTP,
+//    resendOTP,
+//    userLogin
+// }
