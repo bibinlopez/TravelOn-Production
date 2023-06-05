@@ -20,7 +20,7 @@ const sendOTPEmail = async (req, res) => {
    if (userVerificationRecords) {
       const { createdAt } = userVerificationRecords
       if (Date.now() - createdAt <= 300000) {
-         throw new CustomAPIError('Please try after Some times', 400)
+         throw new CustomAPIError('Your limit reached , Please try after Some times', 400)
       }
       await UserVerification.deleteMany({ email })
    }
@@ -110,7 +110,9 @@ const userRegistration = async (req, res) => {
       const newUser = new User(req.body)
       const result = await newUser.save()
 
-      return res.status(201).json({ success: true, data: result })
+      const token = result.createJWT()
+
+      return res.status(201).json({ msg: 'User Created', data: result, token })
    }
 
 }
@@ -147,7 +149,59 @@ const verifyOTP = async (email, otp) => {
 }
 
 
+const userLogin = async (req, res) => {
+   const { email, password, lat, long, km } = req.body
+   if (!email || !password) {
+      throw new CustomAPIError('Please provide email and password', 400)
+   }
+
+   if (!lat || !long || !km) {
+      throw new CustomAPIError('Please provide location details', 400)
+   }
+
+   const user = await User.findOne({ email })
+
+   if (!user) {
+      throw new CustomAPIError('invalid credentials(email)', 401)
+   }
+
+   const isPasswordCorrect = await user.comparePassword(password)
+
+   if (!isPasswordCorrect) {
+      throw new CustomAPIError('invalid credentials(password)', 401)
+   }
+
+   const token = user.createJWT()
+
+
+   const nearPlaces = await Place.aggregate([
+      {
+         $geoNear: {
+            near: {
+               type: "Point",
+               coordinates: [  // need to parse float
+                  parseFloat(long),
+                  parseFloat(lat)
+               ]
+            },
+            maxDistance: km * 1000,  //in meters
+            distanceField: "distance in meters",
+            spherical: true
+         }
+      }, { $match: { status: true } }    // only show to the user  condition good place to visit
+   ])
+
+
+   const travelLogs = await TravelLog.find()
+
+
+   return res.status(200).json({ success: true, data: { user, token, nearPlaces, travelLogs } })
+
+}
+
+
 module.exports = {
    sendOTPEmail,
-   userRegistration
+   userRegistration,
+   userLogin
 }

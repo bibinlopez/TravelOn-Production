@@ -7,7 +7,8 @@ const router = express.Router();
 
 const {
    userRegistration,
-   sendOTPEmail
+   sendOTPEmail,
+   userLogin
  } = require('../controllers/userAuth')
 
 
@@ -17,7 +18,7 @@ const {
 router.post('/registration', userRegistration)
 // router.post('/verifyotp', verifyOTP)
 // router.post('/resendotp', resendOTP)
-// router.post('/login', userLogin)
+router.post('/login', userLogin)
 router.post('/otp',sendOTPEmail)
 
 
