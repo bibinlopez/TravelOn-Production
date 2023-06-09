@@ -4,7 +4,7 @@ const UserPlace = require('../models/userPlace')
 const addPlace = (req, res) => {
    const array = []
    // console.log(req.file);
-   console.log(req.files);
+   // console.log(req.files);
    req.files.forEach((item) => {
       // console.log(item.filename);
       array.push(`/user/${item.filename}`)
