@@ -7,7 +7,7 @@ const addPlace = (req, res) => {
    console.log(req.files);
    req.files.forEach((item) => {
       // console.log(item.filename);
-      array.push(`/sample/${item.filename}`)
+      array.push(`/user/${item.filename}`)
    });
 
    // console.log(array);
@@ -15,7 +15,7 @@ const addPlace = (req, res) => {
    const data = {
       name: req.body.name,
       place: req.body.place,
-      details: req.body.details,
+      detail: req.body.detail,
       address: req.body.address,
       country: req.body.country,
       state: req.body.state,
@@ -28,7 +28,7 @@ const addPlace = (req, res) => {
       },
       image: array
    }
-   const log = new Sample(data);
+   const log = new UserPlace(data);
    log.save()
       .then((result) => {
          return res.status(200).json({
