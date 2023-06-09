@@ -159,7 +159,7 @@ const userLogin = async (req, res) => {
       throw new CustomAPIError('Please provide location details', 400)
    }
 
-   const user = await User.findOne({ email })
+   const user = await User.findOne({ email }).select('-password,-visitedPlaces')
 
    if (!user) {
       throw new CustomAPIError('invalid credentials(email)', 401)
