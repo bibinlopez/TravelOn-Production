@@ -110,9 +110,9 @@ const userRegistration = async (req, res) => {
       const newUser = new User(req.body)
       const result = await newUser.save()
 
-      const token = result.createJWT()
+      // const token = result.createJWT()
 
-      return res.status(201).json({ msg: 'User Created', data: result, token })
+      return res.status(201).json({ success: true , msg : 'User Created' })
    }
 
 }
