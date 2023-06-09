@@ -8,8 +8,21 @@ const TravelLog = require('../models/travelLog')
 
 const bcrypt = require('bcrypt');
 var validator = require('validator');
-
 const nodemailer = require('nodemailer')
+
+const passwordValidator = require('password-validator');
+
+// Create a schema
+var schema = new passwordValidator();
+// Add properties to it
+schema
+   .is().min(5)                                    // Minimum length 5
+   .is().max(10)                                   // Maximum length 100
+   // .has().uppercase()                              // Must have uppercase letters
+   .has().lowercase()                              // Must have lowercase letters
+   .has().digits(1)                                // Must have at least 1 digit     
+   .has().symbols()                                // Must have symbols
+   .has().not().spaces()                           // Should not have spaces
 
 
 
@@ -77,19 +90,52 @@ const sendOTPEmail = async (req, res) => {
       }
    })
 
-   // return res.status(200).json({ msg: 'success' })
 }
 
 
 
 const userRegistration = async (req, res) => {
-   let { email, password, otp, confirmPassword } = req.body
+   let { email, password, name, otp, address, pin, mob, confirmPassword } = req.body
    console.log(req.body);
-   if (!otp || !password) {
-      throw new CustomAPIError('Empty input fields', 400)
+
+   name = name.trim()
+   email = email.trim();
+   address = address.trim();
+   pin = Number(pin.trim())
+   mob = Number(mob.trim())
+   password = password.trim();
+   // console.log(typeof mob);
+   console.log(address.length);
+   if (!otp || !name || !password || !email || !address || !pin || !mob) {
+      throw new CustomAPIError('Empty input fields1', 400)
+   }
+
+   else if (!/^[a-zA-Z]+(([',. -][a-zA-Z ])?[a-zA-Z]*)*$/.test(name)) {
+      throw new CustomAPIError('invalid name entered', 400)
+
+   } else if (!/^(?:(?:\+|0{0,2})91(\s*[\-]\s*)?|[0]?)?[789]\d{9}$/.test(mob)) {
+      throw new CustomAPIError('invalid mob. no entered', 400)
+
+   } else if (!/\d{6}/.test(pin)) {
+      throw new CustomAPIError('invalid pin-code entered', 400)
+
+   } else if (address.length < 5) {
+      throw new CustomAPIError('invalid address', 400)
+
+   }
+   else if (password !== confirmPassword) {
+      throw new CustomAPIError('password must be same', 400)
+
+   } else if (validator.isEmail(email) === false) {
+      throw new CustomAPIError('invalid email entered', 400)
+
+   } else if (schema.validate(password) === false) {
+      throw new CustomAPIError('invalid password entered', 400)
    }
 
    const user = await User.findOne({ email })
+
+
    if (user) {
       throw new CustomAPIError('User with the provided email address already exists', 400)
    }
@@ -98,21 +144,13 @@ const userRegistration = async (req, res) => {
    const verified = await verifyOTP(email, otp)
 
    if (verified) {
-      if (password !== confirmPassword) {
-         throw new CustomAPIError('password must be same', 400)
-      }
-
-      const user = await User.findOne({ email })
-      if (user) {
-         throw new CustomAPIError('User with the provided email address already exists', 400)
-      }
 
       const newUser = new User(req.body)
-      const result = await newUser.save()
+      await newUser.save()
 
       // const token = result.createJWT()
 
-      return res.status(201).json({ success: true , msg : 'User Created' })
+      return res.status(201).json({ success: true, msg: 'User Created' })
    }
 
 }
@@ -125,7 +163,7 @@ const verifyOTP = async (email, otp) => {
    console.log('records', userVerificationRecords);
    if (!userVerificationRecords) {
       //no record found
-      throw new CustomAPIError("Account record does not exist or has been verified already. Please sign up or log in.", 400)
+      throw new CustomAPIError("Please click 'send OTP button' to this email ID", 400)
    }
 
    //user otp record exists
@@ -155,12 +193,13 @@ const userLogin = async (req, res) => {
       throw new CustomAPIError('Please provide email and password', 400)
    }
 
+   console.log(req.body);
    if (!lat || !long || !km) {
       throw new CustomAPIError('Please provide location details', 400)
    }
 
-   const user = await User.findOne({ email }).select('-password')
-
+   const user = await User.findOne({ email })
+   console.log(user, 'this is user');
    if (!user) {
       throw new CustomAPIError('invalid credentials(email)', 401)
    }
@@ -194,8 +233,9 @@ const userLogin = async (req, res) => {
 
    const travelLogs = await TravelLog.find()
 
+   const userProfile = { name: user.name, _id: user._id, address: user.address, pin: user.pin, dob: user.dob, bloodGroup: user.bloodGroup, email: user.email, mob: user.mob }
 
-   return res.status(200).json({ success: true, data: { user, token, nearPlaces, travelLogs } })
+   return res.status(200).json({ success: true, data: { userProfile, token, nearPlaces, travelLogs } })
 
 }
 

@@ -21,20 +21,22 @@ const userSchema = new mongoose.Schema({
    pin: {
       type: Number,
       required: [true, 'must provide pin'],
-      match: [/\d{7}/, 'please provide valid pin']
+      match: [/\d{7}/, 'please provide valid pin'],
+      trim: true
    },
    mob: {
       type: Number,
       required: [true, 'must provide mob. Number'],
-      match: [/^(?:(?:\+|0{0,2})91(\s*[\-]\s*)?|[0]?)?[789]\d{9}$/, 'please provide valid mob. number']
+      match: [/^(?:(?:\+|0{0,2})91(\s*[\-]\s*)?|[0]?)?[789]\d{9}$/, 'please provide valid mob. number'],
+      trim: true
    },
    dob: {
       type: Date,
-      required: [true, 'must provide dob']
+      required: false
    },
    bloodGroup: {
       type: String,
-      required: [true, 'must provide bloodgroup']
+      required: false
    },
    email: {
       type: String,
@@ -54,14 +56,7 @@ const userSchema = new mongoose.Schema({
    //         isVisited: { type: String, default: false }
    //     }
    // ],
-   visitedPlaces: [
-      {
-         placeId: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "Place"
-         }
-      }
-   ],
+   
    // createdAt: {
    //    type: Date,
    //    required: false
