@@ -17,7 +17,7 @@ const app = express()
 const place = require('./routes/place')
 const sample = require('./routes/sample')
 const travelLog= require('./routes/travelLog')
-// const userRoute = require('./routes/userRoute')
+const userRoute = require('./routes/userRoute')
 
 
 app.use(rateLimit({
@@ -36,7 +36,7 @@ app.use(xss())
 
 
 
-app.use(express.static('./public'))
+app.use(express.static('./public/homePage'))
 // app.get('/', (req,res)=>{
 //    res.send('hello bibin, hello travelOn') 
 // })

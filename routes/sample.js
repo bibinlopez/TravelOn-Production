@@ -18,7 +18,7 @@ var storage = multer.diskStorage({
 var upload = multer({ storage: storage })
 
 
-// router.use('/', express.static('public'))
+router.use('/', express.static('public'))
 
 
    
