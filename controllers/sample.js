@@ -34,7 +34,39 @@ const addSample = (req, res) => {
 
 
 
+const path = require('path')
+
+const uploadProductImage = async (req, res) => {
+   // console.log(req.files);
+   const productImage = req.files.image
+
+   if (productImage.length) {
+      const array = []
+
+      for (i in productImage) {
+         const imagePath = path.join(__dirname, '../public/uploads/' + `${productImage[i].name}`)
+         await productImage[i].mv(imagePath)
+         array.push(`/uploads/${productImage[i].name}`)
+      }
+      console.log(array);
+
+      return res.status(200).json({ success: true, img: { src: array } })
+   } else {
+      const imagePath = path.join(__dirname, '../public/uploads/' + `${productImage.name}`)
+
+      await productImage.mv(imagePath)
+
+      return res.status(200).json({ success: true, img: { src: `/uploads/${productImage.name}` } })
+
+   }
+
+
+}
+
+
+
 
 module.exports= {
-   addSample
+   addSample,
+   uploadProductImage
 }

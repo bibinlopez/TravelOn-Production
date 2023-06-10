@@ -28,7 +28,7 @@ const { addPlace } = require('../controllers/userCon')
 
 
 var storage = multer.diskStorage({
-  destination: './public/userPlaceImage1',
+  destination: './public/userPlaceImage',
   filename: function (req, file, cb) {
     let ext = path.extname(file.originalname)
     // console.log(ext)
@@ -38,7 +38,7 @@ var storage = multer.diskStorage({
 var upload = multer({ storage: storage })
 
 
-router.use('/', express.static('public/userPlaceImage1'))
+router.use('/', express.static('public/userPlaceImage'))
 
 
 

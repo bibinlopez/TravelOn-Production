@@ -2,8 +2,9 @@ const express = require('express');
 const router = express.Router();
 const multer = require('multer');
 const path = require('path')
-const { addSample
-} = require('../controllers/sample')
+
+
+const { addSample, uploadProductImage } = require('../controllers/sample')
 
 
 var storage = multer.diskStorage({
@@ -17,13 +18,14 @@ var storage = multer.diskStorage({
 var upload = multer({ storage: storage })
 
 
-router.use('/', express.static('public'))
+// router.use('/', express.static('public'))
 
 
 
 // router.post('/', upload.single('photo'), addSample)
 router.post('/', upload.array('photo', 6), addSample)
 
+router.post('/express',uploadProductImage)
 
 
 
