@@ -17,7 +17,7 @@ const app = express()
 const place = require('./routes/place')
 const sample = require('./routes/sample')
 const travelLog= require('./routes/travelLog')
-const userRoute = require('./routes/userRoute')
+// const userRoute = require('./routes/userRoute')
 
 
 app.use(rateLimit({
@@ -46,7 +46,7 @@ app.use(express.static('./public'))
 app.use('/api', place)
 app.use('/sample', sample)
 app.use('/travel',travelLog)
-app.use('/user',userRoute)
+// app.use('/user',userRoute)
 app.use(notFound)
 
 app.use(errorHandlerMiddlerware)
