@@ -21,7 +21,7 @@ var upload = multer({ storage: storage })
 // router.use('/', express.static('public'))
 
 
-
+   
 // router.post('/', upload.single('photo'), addSample)
 router.post('/', upload.array('photo', 6), addSample)
 
