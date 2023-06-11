@@ -9,14 +9,23 @@ const xss = require('xss-clean')
 const rateLimit = require('express-rate-limit')
 const fileUpload = require('express-fileupload')
 
-const errorHandlerMiddlerware =require('./middlewares/error-handler')
+const errorHandlerMiddlerware = require('./middlewares/error-handler')
+
+const cloudinary = require('cloudinary').v2
+cloudinary.config({
+   cloud_name: process.env.CLOUD_NAME,
+   api_key: process.env.CLOUD_API_KEY,
+   api_secret: process.env.CLOUD_API_SECRET
+})
+
+
 
 const connectDB = require('./db/connect')
 const notFound = require('./middlewares/notFound')
 const app = express()
 const place = require('./routes/place')
 const sample = require('./routes/sample')
-const travelLog= require('./routes/travelLog')
+const travelLog = require('./routes/travelLog')
 const userRoute = require('./routes/userRoute')
 
 
@@ -28,7 +37,8 @@ app.use(rateLimit({
 }))
 
 app.use(express.json())
-app.use(fileUpload())
+// app.use(fileUpload())
+app.use(fileUpload({ useTempFiles: true }))
 
 app.use(helmet())
 app.use(cors())
@@ -45,8 +55,8 @@ app.use(express.static('./public/homePage'))
 
 app.use('/api', place)
 app.use('/sample', sample)
-app.use('/travel',travelLog)
-// app.use('/user',userRoute)
+app.use('/travel', travelLog)
+app.use('/user',userRoute)
 app.use(notFound)
 
 app.use(errorHandlerMiddlerware)

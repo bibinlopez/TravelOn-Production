@@ -1,4 +1,5 @@
 const Sample = require('../models/sample')
+const cloudinary = require('cloudinary').v2
 
 const addSample = (req, res) => {
    const array = []
@@ -36,7 +37,7 @@ const addSample = (req, res) => {
 
 const path = require('path')
 
-const uploadProductImage = async (req, res) => {
+const uploadProductImageLocal = async (req, res) => {
    // console.log(req.files);
    const productImage = req.files.image
 
@@ -60,10 +61,19 @@ const uploadProductImage = async (req, res) => {
 
    }
 
-
 }
 
 
+
+const uploadProductImage = async (req, res) => {
+   // console.log(req.files.image);
+   const result = await cloudinary.uploader.upload(req.files.image.tempFilePath, {
+      use_filename: true,
+      folder: 'sample',
+   });
+   console.log(result);
+}
+ 
 
 
 module.exports= {

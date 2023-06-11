@@ -96,7 +96,7 @@ const sendOTPEmail = async (req, res) => {
 
 const userRegistration = async (req, res) => {
    let { email, password, name, otp, address, pin, mob, confirmPassword } = req.body
-   console.log(req.body);
+   // console.log(req.body);
 
    name = name.trim()
    email = email.trim();
@@ -105,7 +105,7 @@ const userRegistration = async (req, res) => {
    mob = Number(mob.trim())
    password = password.trim();
    // console.log(typeof mob);
-   console.log(address.length);
+   // console.log(address.length); 
    if (!otp || !name || !password || !email || !address || !pin || !mob) {
       throw new CustomAPIError('Empty input fields1', 400)
    }
@@ -193,13 +193,13 @@ const userLogin = async (req, res) => {
       throw new CustomAPIError('Please provide email and password', 400)
    }
 
-   console.log(req.body);
+   // console.log(req.body);
    if (!lat || !long || !km) {
       throw new CustomAPIError('Please provide location details', 400)
    }
 
    const user = await User.findOne({ email })
-   console.log(user, 'this is user');
+   // console.log(user, 'this is user');
    if (!user) {
       throw new CustomAPIError('invalid credentials(email)', 401)
    }

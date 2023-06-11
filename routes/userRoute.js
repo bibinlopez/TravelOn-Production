@@ -1,25 +1,25 @@
 
 
-// const express = require('express')
-// const router = express.Router();
+const express = require('express')
+const router = express.Router();
 
 
-// const multer = require('multer');
-// const path = require('path')
+const multer = require('multer');
+const path = require('path')
 
-// // const multiparty = require('../middlewares/multiparty')
+// const multiparty = require('../middlewares/multiparty')
 
-// const {
-//   userRegistration,
-//   sendOTPEmail,
-//   userLogin
-// } = require('../controllers/userAuth')
+const {
+  userRegistration,
+  sendOTPEmail,
+  userLogin
+} = require('../controllers/userAuth')
 
-// router.post('/registration', userRegistration)
-// // router.post('/verifyotp', verifyOTP)
-// // router.post('/resendotp', resendOTP)
-// router.post('/login', userLogin)
-// router.post('/otp', sendOTPEmail)
+router.post('/registration', userRegistration)
+// router.post('/verifyotp', verifyOTP)
+// router.post('/resendotp', resendOTP)
+router.post('/login', userLogin)
+router.post('/otp', sendOTPEmail)
 
 
 
@@ -46,4 +46,4 @@
 
 
 
-// module.exports = router
+module.exports = router
