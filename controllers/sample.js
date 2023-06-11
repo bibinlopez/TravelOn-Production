@@ -63,7 +63,7 @@ const uploadProductImageLocal = async (req, res) => {
 
 }
 
-
+// const imagePath = path.join(__dirname, '../public/uploads/' + `computer-1.jpeg`)
 
 const uploadProductImage = async (req, res) => {
    // console.log(req.files.image);
