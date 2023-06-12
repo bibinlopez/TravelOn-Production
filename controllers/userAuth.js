@@ -240,9 +240,14 @@ const userLogin = async (req, res) => {
 }
 
 
+
 const sendForgotPasswordOTP = async (req, res) => {
 
    const { email } = req.body
+
+   if (!email) {
+      throw new CustomAPIError('Please Provide Email', 400)
+   }
 
    const userVerificationRecords = await UserVerification.findOne({ email })
    if (userVerificationRecords) {
@@ -307,8 +312,14 @@ const sendForgotPasswordOTP = async (req, res) => {
 }
 
 
+
 const verifyForgotPasswordOTP = async (req, res) => {
    const { email, otp } = req.body
+
+   if (!email || !otp) {
+      throw new CustomAPIError('Please Provide email and OTP', 400)
+   }
+
    const userVerificationRecords = await UserVerification.findOne({ email })
    // console.log('records', userVerificationRecords);
    if (!userVerificationRecords) {
@@ -336,18 +347,24 @@ const verifyForgotPasswordOTP = async (req, res) => {
 
 }
 
+
 const setNewPassword = async (req, res) => {
    const { password, confirmPassword, email } = req.body
+
+   if (!password || !confirmPassword) {
+      throw new CustomAPIError('Please Provide Password and Confirm Password', 400)
+   }
+
    if (password !== confirmPassword) {
       throw new CustomAPIError('Password Should be same', 400)
    }
-   const user =await User.findOne({ email })
+   const user = await User.findOne({ email })
 
    user.password = password
 
    await user.save()
 
-   return res.status(200).json({success: true , msg: "Password changed Successfully!!!"})
+   return res.status(200).json({ success: true, msg: "Password changed Successfully!!!" })
 }
 
 module.exports = {
