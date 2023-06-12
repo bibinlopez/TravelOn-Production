@@ -12,7 +12,10 @@ const path = require('path')
 const {
   userRegistration,
   sendOTPEmail,
-  userLogin
+  userLogin,
+  sendForgotPasswordOTP,
+  verifyForgotPasswordOTP,
+  setNewPassword
 } = require('../controllers/userAuth')
 
 router.post('/registration', userRegistration)
@@ -21,8 +24,9 @@ router.post('/registration', userRegistration)
 router.post('/login', userLogin)
 router.post('/otp', sendOTPEmail)
 
-
-
+router.post('/otpForgot', sendForgotPasswordOTP)
+router.post('/verifyForgotOTP', verifyForgotPasswordOTP)
+router.post('/setNewPassword', setNewPassword)
 
 // const { addPlace } = require('../controllers/userCon')
 

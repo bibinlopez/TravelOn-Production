@@ -62,7 +62,7 @@ const sendOTPEmail = async (req, res) => {
       html: `<p> Your OTP Verification code is <b> ${otp} </b>. Enter the code in the TravelOn app to verify your email address and complete verification process. This code <b>expires in 30 minutes</b>.</p>`
 
    }
-   console.log(otp);
+   // console.log(otp);
    saltRounds = 10
    const hashedOTP = await bcrypt.hash(otp, saltRounds)
    const userverification = await new UserVerification({
@@ -240,8 +240,121 @@ const userLogin = async (req, res) => {
 }
 
 
+const sendForgotPasswordOTP = async (req, res) => {
+
+   const { email } = req.body
+
+   const userVerificationRecords = await UserVerification.findOne({ email })
+   if (userVerificationRecords) {
+      const { createdAt } = userVerificationRecords
+      if (Date.now() - createdAt <= 300000) {
+         throw new CustomAPIError('Your limit reached , Please try after Some times', 400)
+      }
+      await UserVerification.deleteMany({ email })
+   }
+
+
+   const user = await User.findOne({ email })
+   if (!user) {
+      throw new CustomAPIError('User with the provided email address does not exist, Please sign Up', 400)
+   }
+
+
+   const otp = `${Math.floor(1000 + Math.random() * 9000)}`
+
+   const transporter = nodemailer.createTransport({
+      service: "hotmail",
+      auth: {
+         user: process.env.EMAIL,
+         pass: process.env.PASSWORD
+      }
+   })
+
+   const options = {
+      from: `Travel-On <${process.env.EMAIL}>`,
+      to: email,
+      subject: "Verifiy Your Email",
+      html: `<p> Your OTP Verification code is <b> ${otp} </b> To set New Password.  This code <b>expires in 30 minutes</b>.</p>`
+
+   }
+   // console.log(otp);
+   saltRounds = 10
+   const hashedOTP = await bcrypt.hash(otp, saltRounds)
+   const userverification = await new UserVerification({
+      email,
+      otp: hashedOTP,
+      createdAt: Date.now(),
+      expiresAt: Date.now() + 1800000      // 30 minutes in milliseconds
+
+   })
+
+   //save otp record
+   const Result = await userverification.save();
+   // console.log(Result);
+   transporter.sendMail(options, (err, info) => {
+      if (err) {
+         console.log(err);
+         return;
+      } else {
+         console.log(info.messageId);
+         return res.status(200).json({
+            status: "PENDING",
+            message: 'Verification otp email send through email',
+            data: Result
+         })
+      }
+   })
+}
+
+
+const verifyForgotPasswordOTP = async (req, res) => {
+   const { email, otp } = req.body
+   const userVerificationRecords = await UserVerification.findOne({ email })
+   // console.log('records', userVerificationRecords);
+   if (!userVerificationRecords) {
+      //no record found
+      throw new CustomAPIError("Please send OTP again", 400)
+   }
+
+   //user otp record exists
+   const { expiresAt } = userVerificationRecords
+   const hashedOTP = userVerificationRecords.otp
+
+   if (expiresAt < Date.now()) {
+      // user otp records has expired
+      // await UserVerification.deleteOne({ email })
+      throw new CustomAPIError("Code has expried . Please request again.", 400)
+   }
+   const validOTP = await bcrypt.compare(otp, hashedOTP)
+   if (!validOTP) {
+      //entered otp is wrong
+      throw new CustomAPIError("Invalid code passed . Check your inbox.", 401)
+   }
+   await UserVerification.deleteOne({ email })
+
+   return res.status(200).json({ success: true, msg: 'OTP Verfied Successfully' })
+
+}
+
+const setNewPassword = async (req, res) => {
+   const { password, confirmPassword, email } = req.body
+   if (password !== confirmPassword) {
+      throw new CustomAPIError('Password Should be same', 400)
+   }
+   const user =await User.findOne({ email })
+
+   user.password = password
+
+   await user.save()
+
+   return res.status(200).json({success: true , msg: "Password changed Successfully!!!"})
+}
+
 module.exports = {
    sendOTPEmail,
    userRegistration,
-   userLogin
+   userLogin,
+   sendForgotPasswordOTP,
+   verifyForgotPasswordOTP,
+   setNewPassword
 }
