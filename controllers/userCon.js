@@ -1,6 +1,9 @@
 
 const UserPlace = require('../models/userPlace')
+const User = require('../models/userModel')
 const UserTravelLog = require('../models/userTravelLog')
+const { CustomAPIError } = require('../errors/custom-error')
+
 
 const addPlace0 = (req, res) => {
    const array = []
@@ -93,8 +96,43 @@ const addTravelLog = async (req, res) => {
    return res.status(201).json({ success: true, msg: 'TravelLog added', result })
 }
 
+
+const newPassword = async (req,res) =>{
+   const {email, oldPassword , password, confirmPassword} = req.body
+
+   if(!oldPassword || !confirmPassword){
+      throw new CustomAPIError('please provide old password and new Password', 400)
+   }
+
+
+   const user = await User.findOne({ email })
+   // console.log(user, 'this is user');
+   if (!user) {
+      throw new CustomAPIError('invalid credentials(email)', 401)
+   }
+
+   const isPasswordCorrect = await user.comparePassword(oldPassword)
+
+   if (!isPasswordCorrect) {
+      throw new CustomAPIError('Please provide correct Old Password', 401)
+   }
+
+   if (password !== confirmPassword) {
+      throw new CustomAPIError('password and confirm password should be same', 400)
+   }
+
+   user.password = password
+
+   await user.save()
+
+   return res.status(200).json({ success: true, msg: "Password changed Successfully!!!" })
+
+}
+
+
 module.exports = {
    addPlace0,
    addPlace,
-   addTravelLog
+   addTravelLog,
+   newPassword
 }

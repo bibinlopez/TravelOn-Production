@@ -20,7 +20,8 @@ const {
 const {
   addPlace0,
   addPlace,
-  addTravelLog } = require('../controllers/userCon')
+  addTravelLog,
+  newPassword } = require('../controllers/userCon')
 
 
 router.post('/registration', userRegistration)
@@ -54,6 +55,7 @@ router.use('/', express.static('public/User'))
 router.post('/0', upload.array('photo', 6), addPlace0)
 router.post('/addplace', addPlace)
 router.post('/addtravelLog', addTravelLog)
+router.post('/newPassword', newPassword)
 
 
 
