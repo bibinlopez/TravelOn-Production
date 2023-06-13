@@ -73,9 +73,28 @@ const addPlace = async (req, res) => {
    return res.status(201).json({ success: true, msg: 'Place added', result })
 }
 
-
+const addTravelLog = async (req, res) => {
+   const array = [
+      "/user/userPlaceImageDefault/photo-168665660393121.jpg",
+      "/user/userPlaceImageDefault/photo-168665660393963.jpg",
+      "/user/userPlaceImageDefault/photo-168665660394348.jpg"
+   ]
+   const { heading, remark, latitude, longitude, content } = req.body
+   const data = {
+      heading,
+      remark,
+      latitude,
+      longitude,
+      content,
+      images: array
+   }
+   const log = new UserTravelLog(data);
+   const result = await log.save()
+   return res.status(201).json({ success: true, msg: 'TravelLog added', result })
+}
 
 module.exports = {
    addPlace0,
-   addPlace
+   addPlace,
+   addTravelLog
 }

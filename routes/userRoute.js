@@ -15,8 +15,13 @@ const {
   userLogin,
   sendForgotPasswordOTP,
   verifyForgotPasswordOTP,
-  setNewPassword
-} = require('../controllers/userAuth')
+  setNewPassword } = require('../controllers/userAuth')
+
+const {
+  addPlace0,
+  addPlace,
+  addTravelLog } = require('../controllers/userCon')
+
 
 router.post('/registration', userRegistration)
 // router.post('/verifyotp', verifyOTP)
@@ -28,7 +33,7 @@ router.post('/otpForgot', sendForgotPasswordOTP)
 router.post('/verifyForgotOTP', verifyForgotPasswordOTP)
 router.post('/setNewPassword', setNewPassword)
 
-const { addPlace0 ,addPlace } = require('../controllers/userCon')
+
 
 
 var storage = multer.diskStorage({
@@ -47,7 +52,8 @@ router.use('/', express.static('public/User'))
 
 
 router.post('/0', upload.array('photo', 6), addPlace0)
-router.post('/',addPlace)
+router.post('/addplace', addPlace)
+router.post('/addtravelLog', addTravelLog)
 
 
 
