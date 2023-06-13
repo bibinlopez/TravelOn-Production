@@ -28,25 +28,26 @@ router.post('/otpForgot', sendForgotPasswordOTP)
 router.post('/verifyForgotOTP', verifyForgotPasswordOTP)
 router.post('/setNewPassword', setNewPassword)
 
-// const { addPlace } = require('../controllers/userCon')
+const { addPlace0 ,addPlace } = require('../controllers/userCon')
 
 
-// var storage = multer.diskStorage({
-//   destination: './public/userPlaceImage',
-//   filename: function (req, file, cb) {
-//     let ext = path.extname(file.originalname)
-//     // console.log(ext)
-//     cb(null, file.fieldname + '-' + Date.now() + Math.floor(10 + Math.random() * 90) + ext)
-//   }
-// })
-// var upload = multer({ storage: storage })
+var storage = multer.diskStorage({
+  destination: './public/User/userPlaceImage',
+  filename: function (req, file, cb) {
+    let ext = path.extname(file.originalname)
+    // console.log(ext)
+    cb(null, file.fieldname + '-' + Date.now() + Math.floor(10 + Math.random() * 90) + ext)
+  }
+})
+var upload = multer({ storage: storage })
 
 
-// router.use('/', express.static('public/userPlaceImage'))
+router.use('/', express.static('public/User'))
 
 
 
-// router.post('/', upload.array('photo', 6), addPlace)
+router.post('/0', upload.array('photo', 6), addPlace0)
+router.post('/',addPlace)
 
 
 
