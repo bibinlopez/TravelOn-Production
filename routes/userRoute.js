@@ -37,22 +37,22 @@ router.post('/setNewPassword', setNewPassword)
 
 
 
-var storage = multer.diskStorage({
-  destination: './public/User/userPlaceImage',
-  filename: function (req, file, cb) {
-    let ext = path.extname(file.originalname)
-    // console.log(ext)
-    cb(null, file.fieldname + '-' + Date.now() + Math.floor(10 + Math.random() * 90) + ext)
-  }
-})
-var upload = multer({ storage: storage })
+// var storage = multer.diskStorage({
+//   destination: './public/User/userPlaceImage',
+//   filename: function (req, file, cb) {
+//     let ext = path.extname(file.originalname)
+//     // console.log(ext)
+//     cb(null, file.fieldname + '-' + Date.now() + Math.floor(10 + Math.random() * 90) + ext)
+//   }
+// })
+// var upload = multer({ storage: storage })
 
 
 router.use('/', express.static('public/User'))
 
 
 
-router.post('/0', upload.array('photo', 6), addPlace0)
+// router.post('/0', upload.array('photo', 6), addPlace0)
 router.post('/addplace', addPlace)
 router.post('/addtravelLog', addTravelLog)
 router.post('/newPassword', newPassword)
