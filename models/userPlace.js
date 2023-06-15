@@ -5,7 +5,7 @@ const UserPlaceSchema = new mongoose.Schema({
       type: String,
       required: [true, 'must provide name'],
       minLength: 3,
-      maxlegth : 50,
+      maxlegth: 50,
       trim: true,
    },
    detail: {
@@ -60,19 +60,21 @@ const UserPlaceSchema = new mongoose.Schema({
       type: Number,
       default: 4.5,
    },
-   createdAt: {
-      type: Date,
-      required: false
+   createdBy: {
+      type: mongoose.Types.ObjectId,
+      ref: 'User',
+      required: [true, 'please provide User Id']
    }
-})
+}, { timestamps: true }
+)
 
 
-UserPlaceSchema.pre('save', function (next) {
-   if (!this.createdAt) {
-      this.createdAt = Date.now() + 19800000
-   }
-   next()
-})
+// UserPlaceSchema.pre('save', function (next) {
+//    if (!this.createdAt) {
+//       this.createdAt = Date.now() + 19800000
+//    }
+//    next()
+// })
 
 // PlaceSchema.index({ name: "text", district: "text" })
 UserPlaceSchema.index({ location: "2dsphere" })

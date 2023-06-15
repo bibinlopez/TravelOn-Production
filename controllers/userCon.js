@@ -49,6 +49,8 @@ const { CustomAPIError } = require('../errors/custom-error')
 // }
 
 const addPlace = async (req, res) => {
+   const { userId, name } = req.user
+   console.log(req.body);
    const array = [
       "/user/userPlaceImageDefault/photo-168665660393121.jpg",
       "/user/userPlaceImageDefault/photo-168665660393963.jpg",
@@ -68,7 +70,8 @@ const addPlace = async (req, res) => {
             req.body.latitude
          ]
       },
-      image: array
+      image: array,
+      createdBy: userId
    }
    const log = new UserPlace(data);
    const result = await log.save()

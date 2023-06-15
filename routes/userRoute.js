@@ -3,6 +3,7 @@
 const express = require('express')
 const router = express.Router();
 
+const authMiddlware = require('../middlewares/auth')
 
 const multer = require('multer');
 const path = require('path')
@@ -54,10 +55,10 @@ router.use('/', express.static('public/User'))
 
 
 // router.post('/0', upload.array('photo', 6), addPlace0)
-router.post('/addplace', addPlace)
-router.post('/addtravelLog', addTravelLog)
-router.post('/newPassword', newPassword)
-router.post('/start', startUpAPI)
+router.post('/addplace', authMiddlware, addPlace)
+router.post('/addtravelLog', authMiddlware, addTravelLog)
+router.post('/newPassword', authMiddlware, newPassword)
+router.post('/start', authMiddlware, startUpAPI)
 
 
 

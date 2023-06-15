@@ -1,30 +1,36 @@
-const express = require('express')
 require('dotenv').config()
 require('express-async-errors')
+
+const express = require('express')
+const app = express()
 
 // extra security packages
 const helmet = require('helmet')
 const cors = require('cors')
 const xss = require('xss-clean')
 const rateLimit = require('express-rate-limit')
-const fileUpload = require('express-fileupload')
+// const fileUpload = require('express-fileupload')
 
-const errorHandlerMiddlerware = require('./middlewares/error-handler')
 
-const cloudinary = require('cloudinary').v2
-cloudinary.config({
-   cloud_name: process.env.CLOUD_NAME,
-   api_key: process.env.CLOUD_API_KEY,
-   api_secret: process.env.CLOUD_API_SECRET
-})
+
+// const cloudinary = require('cloudinary').v2
+// cloudinary.config({
+//    cloud_name: process.env.CLOUD_NAME,
+//    api_key: process.env.CLOUD_API_KEY,
+//    api_secret: process.env.CLOUD_API_SECRET
+// })
 
 
 const connectDB = require('./db/connect')
+
 const notFound = require('./middlewares/notFound')
-const app = express()
+const errorHandlerMiddlerware = require('./middlewares/error-handler')
+
+
 const place = require('./routes/place')
 const travelLog = require('./routes/travelLog')
 const userRoute = require('./routes/userRoute')
+
 
 
 app.use(rateLimit({
@@ -54,10 +60,12 @@ app.use(express.static('./public/homePage'))
 app.use('/api', place)
 // app.use('/sample', sample)
 app.use('/travel', travelLog)
-app.use('/user',userRoute)
-app.use(notFound)
+app.use('/user', userRoute)
 
+
+app.use(notFound)
 app.use(errorHandlerMiddlerware)
+
 
 const port = process.env.PORT || 3000;
 
