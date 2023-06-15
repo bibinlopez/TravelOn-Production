@@ -25,7 +25,9 @@ const {
   newPassword,
   startUpAPI,
   getAllPlaces,
-  getAllTravleLogs } = require('../controllers/userCon')
+  getAllTravleLogs,
+  showMe,
+  editProfile } = require('../controllers/userCon')
 
 
 router.post('/registration', userRegistration)
@@ -63,6 +65,8 @@ router.post('/newPassword', authMiddlware, newPassword)
 router.post('/start', authMiddlware, startUpAPI)
 router.get('/getAllPlaces', authMiddlware, getAllPlaces)
 router.get('/getAlltravelLogs', authMiddlware, getAllTravleLogs)
+router.get('/showMe', authMiddlware, showMe)
+router.patch('/editProfile', authMiddlware, editProfile)
 
 
 

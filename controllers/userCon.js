@@ -185,11 +185,34 @@ const startUpAPI = async (req, res) => {
 }
 
 
+const showMe = async (req, res) => {
+   const me = await User.findOne({ _id: req.user.userId })
+   return res.status(200).json({ success: true, data: me })
+
+}
+
+const editProfile = async (req,res) => {
+   const {address, mob, pin, dob, bloodGroup, name} = req.body
+   const data = {
+      address,
+      mob,
+      pin,
+      dob,
+      bloodGroup,
+      name
+   }
+   const user = await User.findOneAndUpdate({_id: req.user.userId}, data, {new: true, runValidators: true})
+   return res.status(200).json({ success: true, data: user})
+}
+
+
 module.exports = {
    addPlace,
    addTravelLog,
    newPassword,
    startUpAPI,
    getAllPlaces,
-   getAllTravleLogs
+   getAllTravleLogs,
+   showMe,
+   editProfile
 }
