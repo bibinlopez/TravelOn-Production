@@ -1,52 +1,52 @@
-
+const Place = require('../models/place')
 const UserPlace = require('../models/userPlace')
 const User = require('../models/userModel')
 const UserTravelLog = require('../models/userTravelLog')
 const { CustomAPIError } = require('../errors/custom-error')
 
 
-const addPlace0 = (req, res) => {
-   const array = []
-   // console.log(req.file);
-   console.log(req.files);
-   req.files.forEach((item) => {
-      // console.log(item.filename);
-      array.push(`/user/userPlaceImage/${item.filename}`)
-   });
+// const addPlace0 = (req, res) => {
+//    const array = []
+//    // console.log(req.file);
+//    console.log(req.files);
+//    req.files.forEach((item) => {
+//       // console.log(item.filename);
+//       array.push(`/user/userPlaceImage/${item.filename}`)
+//    });
 
-   // console.log(array);
-   // const Name = `/sample/${req.file.filename}`
-   const data = {
-      name: req.body.name,
-      place: req.body.place,
-      detail: req.body.detail,
-      address: req.body.address,
-      country: req.body.country,
-      state: req.body.state,
-      district: req.body.district,
-      location: {
-         coordinates: [
-            req.body.longitude,
-            req.body.latitude
-         ]
-      },
-      image: array
-   }
-   const log = new UserPlace(data);
-   log.save()
-      .then((result) => {
-         return res.status(200).json({
-            success: true,
-            data: result
-         })
-      })
-      .catch((err) => {
-         return res.status(422).json({
-            success: false,
-            error: err
-         })
-      })
-}
+//    // console.log(array);
+//    // const Name = `/sample/${req.file.filename}`
+//    const data = {
+//       name: req.body.name,
+//       place: req.body.place,
+//       detail: req.body.detail,
+//       address: req.body.address,
+//       country: req.body.country,
+//       state: req.body.state,
+//       district: req.body.district,
+//       location: {
+//          coordinates: [
+//             req.body.longitude,
+//             req.body.latitude
+//          ]
+//       },
+//       image: array
+//    }
+//    const log = new UserPlace(data);
+//    log.save()
+//       .then((result) => {
+//          return res.status(200).json({
+//             success: true,
+//             data: result
+//          })
+//       })
+//       .catch((err) => {
+//          return res.status(422).json({
+//             success: false,
+//             error: err
+//          })
+//       })
+// }
 
 const addPlace = async (req, res) => {
    const array = [
@@ -97,10 +97,10 @@ const addTravelLog = async (req, res) => {
 }
 
 
-const newPassword = async (req,res) =>{
-   const {email, oldPassword , password, confirmPassword} = req.body
+const newPassword = async (req, res) => {
+   const { email, oldPassword, password, confirmPassword } = req.body
 
-   if(!oldPassword || !confirmPassword){
+   if (!oldPassword || !confirmPassword) {
       throw new CustomAPIError('please provide old password and new Password', 400)
    }
 
@@ -130,9 +130,41 @@ const newPassword = async (req,res) =>{
 }
 
 
+const startUpAPI = async (req, res) => {
+   const { lat, long } = req.body
+   if (!lat || !long) {
+      throw new CustomAPIError('please provide Latitude and Longitude', 400)
+   }
+   const nearPlaces = await Place.aggregate([
+      {
+         $geoNear: {
+            near: {
+               type: "Point",
+               coordinates: [  // need to parse float
+                  parseFloat(long),
+                  parseFloat(lat)
+               ]
+            },
+            maxDistance: 500,  //in meters
+            distanceField: "distance in meters",
+            spherical: true
+         }
+      }, { $match: { status: true } }    // only show to the user  condition good place to visit
+   ])
+
+   return res.status(200).json({ data: nearPlaces })
+   //    if (nearPlaces.length) {
+   //       console.log('User visited this place');
+
+   //    } else {
+   //       return res.send('no place')
+   //    }
+}
+
+
 module.exports = {
-   addPlace0,
    addPlace,
    addTravelLog,
-   newPassword
+   newPassword,
+   startUpAPI
 }

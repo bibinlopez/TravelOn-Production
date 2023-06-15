@@ -21,7 +21,8 @@ const {
   addPlace0,
   addPlace,
   addTravelLog,
-  newPassword } = require('../controllers/userCon')
+  newPassword,
+  startUpAPI } = require('../controllers/userCon')
 
 
 router.post('/registration', userRegistration)
@@ -56,6 +57,7 @@ router.use('/', express.static('public/User'))
 router.post('/addplace', addPlace)
 router.post('/addtravelLog', addTravelLog)
 router.post('/newPassword', newPassword)
+router.post('/start', startUpAPI)
 
 
 

@@ -19,12 +19,10 @@ cloudinary.config({
 })
 
 
-
 const connectDB = require('./db/connect')
 const notFound = require('./middlewares/notFound')
 const app = express()
 const place = require('./routes/place')
-const sample = require('./routes/sample')
 const travelLog = require('./routes/travelLog')
 const userRoute = require('./routes/userRoute')
 
@@ -54,7 +52,7 @@ app.use(express.static('./public/homePage'))
 
 
 app.use('/api', place)
-app.use('/sample', sample)
+// app.use('/sample', sample)
 app.use('/travel', travelLog)
 app.use('/user',userRoute)
 app.use(notFound)
@@ -66,7 +64,7 @@ const port = process.env.PORT || 3000;
 const start = async () => {
    try {
       await connectDB(process.env.MONGO_URI)
-      await app.listen(port, console.log(`Server is listening on the port ${port}`))
+      app.listen(port, console.log(`Server is listening on the port ${port}`))
    } catch (error) {
       console.log(error);
    }
