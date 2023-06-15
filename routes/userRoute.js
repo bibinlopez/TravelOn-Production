@@ -23,7 +23,9 @@ const {
   addPlace,
   addTravelLog,
   newPassword,
-  startUpAPI } = require('../controllers/userCon')
+  startUpAPI,
+  getAllPlaces,
+  getAllTravleLogs } = require('../controllers/userCon')
 
 
 router.post('/registration', userRegistration)
@@ -59,6 +61,9 @@ router.post('/addplace', authMiddlware, addPlace)
 router.post('/addtravelLog', authMiddlware, addTravelLog)
 router.post('/newPassword', authMiddlware, newPassword)
 router.post('/start', authMiddlware, startUpAPI)
+router.get('/getAllPlaces', authMiddlware, getAllPlaces)
+router.get('/getAlltravelLogs', authMiddlware, getAllTravleLogs)
+
 
 
 

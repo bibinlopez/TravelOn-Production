@@ -79,6 +79,16 @@ const addPlace = async (req, res) => {
    return res.status(201).json({ success: true, msg: 'Place added', result })
 }
 
+const getAllPlaces = async (req, res) => {
+   const places = await UserPlace.find({})
+   if (!places.length) {
+      throw new CustomAPIError('No Places found , Please add places to View them', 404)
+   }
+
+   return res.status(200).json({ success: true, count: places.length, data: places })
+}
+
+
 const addTravelLog = async (req, res) => {
    const array = [
       "/user/userPlaceImageDefault/photo-168665660393121.jpg",
@@ -92,11 +102,21 @@ const addTravelLog = async (req, res) => {
       latitude,
       longitude,
       content,
-      images: array
+      images: array,
+      createdBy: req.user.userId
    }
    const log = new UserTravelLog(data);
    const result = await log.save()
    return res.status(201).json({ success: true, msg: 'TravelLog added', result })
+}
+
+const getAllTravleLogs = async (req, res) => {
+   const logs = await UserTravelLog.find({})
+   if (!logs.length) {
+      throw new CustomAPIError('No Places found , Please add places to View them', 404)
+   }
+
+   return res.status(200).json({ success: true, count: logs.length, data: logs })
 }
 
 
@@ -169,5 +189,7 @@ module.exports = {
    addPlace,
    addTravelLog,
    newPassword,
-   startUpAPI
+   startUpAPI,
+   getAllPlaces,
+   getAllTravleLogs
 }
