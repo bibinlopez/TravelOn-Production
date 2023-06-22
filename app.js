@@ -49,8 +49,8 @@ app.use(cors())
 app.use(xss())
 
 
-
-app.use(express.static('./public/homePage'))
+app.use(express.static('./public'))
+// app.use(express.static('./public/homePage'))
 // app.get('/', (req,res)=>{
 //    res.send('hello bibin, hello travelOn') 
 // })

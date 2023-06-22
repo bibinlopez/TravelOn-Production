@@ -110,6 +110,8 @@ const addTravelLog = async (req, res) => {
    return res.status(201).json({ success: true, msg: 'TravelLog added', result })
 }
 
+
+
 const getAllTravleLogs = async (req, res) => {
    const logs = await UserTravelLog.find({})
    if (!logs.length) {
@@ -191,8 +193,8 @@ const showMe = async (req, res) => {
 
 }
 
-const editProfile = async (req,res) => {
-   const {address, mob, pin, dob, bloodGroup, name} = req.body
+const editProfile = async (req, res) => {
+   const { address, mob, pin, dob, bloodGroup, name } = req.body
    const data = {
       address,
       mob,
@@ -201,8 +203,8 @@ const editProfile = async (req,res) => {
       bloodGroup,
       name
    }
-   const user = await User.findOneAndUpdate({_id: req.user.userId}, data, {new: true, runValidators: true})
-   return res.status(200).json({ success: true, data: user})
+   const user = await User.findOneAndUpdate({ _id: req.user.userId }, data, { new: true, runValidators: true })
+   return res.status(200).json({ success: true, data: user })
 }
 
 
